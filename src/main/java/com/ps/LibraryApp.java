@@ -54,25 +54,38 @@ public class LibraryApp {
             } else if (choice.equals("2")) {
                 // Show books that are checked out
                 System.out.println("\nChecked Out Books:");
+                boolean anyCheckedOut = false;
+
                 for (int i = 0; i < books.length; i++) {
                     if (books[i].isCheckedOut()) {
                         System.out.println("ID: " + books[i].getId() + ", Title: " + books[i].getTitle() + ", Checked out to: " + books[i].getCheckedOutTo());
+                        anyCheckedOut = true;
                     }
                 }
 
-                // Ask if user wants to check in a book
-                System.out.print("\nEnter the ID of the book to check in (0 to go back): ");
-                int checkInId = Integer.parseInt(scanner.nextLine());
+                if (anyCheckedOut) {
+                    // Ask if user wants to check in a book
+                    System.out.print("\nEnter the ID of the book to check in (0 to go back): ");
+                    int checkInId = Integer.parseInt(scanner.nextLine());
 
-                if (checkInId != 0) {
-                    for (int i = 0; i < books.length; i++) {
-                        if (books[i].getId() == checkInId && books[i].isCheckedOut()) {
-                            books[i].checkIn();
-                            System.out.println("Book checked in successfully!");
+                    if (checkInId != 0) {
+                        boolean found = false;
+                        for (int i = 0; i < books.length; i++) {
+                            if (books[i].getId() == checkInId && books[i].isCheckedOut()) {
+                                books[i].checkIn();
+                                System.out.println("Book checked in successfully!");
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            System.out.println("Invalid ID or that book is not checked out.");
                         }
                     }
+                } else {
+                    System.out.println("No books are currently checked out.");
                 }
-                
+
             }
             else if (choice.equals("3")) {
                 // Exit the program
