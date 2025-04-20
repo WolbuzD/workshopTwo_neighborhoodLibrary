@@ -1,26 +1,28 @@
 package com.ps;
 
-import java.lang.reflect.Array;
 import java.util.Scanner;
 
 public class LibraryApp {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-       //Let's create an Array to hold the inventory of 20 books
+
+        // Create inventory of 20 books with real titles
         Book[] books = new Book[20];
+        String[] realTitles = {
+                "To Kill a Mockingbird", "1984", "The Great Gatsby", "The Catcher in the Rye", "Pride and Prejudice",
+                "The Hobbit", "Moby-Dick", "War and Peace", "Jane Eyre", "The Lord of the Rings",
+                "Animal Farm", "Brave New World", "Wuthering Heights", "Crime and Punishment", "The Alchemist",
+                "The Book Thief", "Frankenstein", "The Kite Runner", "Of Mice and Men", "The Hunger Games"
+        };
 
-        //Now we need to fill in sample books using a Loop:
-        for(int i=0; i<20; i++){
-            books[i]= new Book(i + 1, "ISBN" + (1000 + i), "Book Title" + (i + 1));
-
-           // System.out.println(books[i].getId()+" "+ books[i].getIsbn() +" "+ books[i].getTitle());
+        for (int i = 0; i < books.length; i++) {
+            books[i] = new Book(i + 1, "ISBN" + (1000 + i), realTitles[i]);
         }
 
-       // Keep the program running until the user chooses to exit
         boolean running = true;
 
-        while(running){
-            // Show main menu
+        while (running) {
+            // Main menu
             System.out.println("\n--- Neighborhood Library ---");
             System.out.println("1. Show Available Books");
             System.out.println("2. Show Checked Out Books");
@@ -28,78 +30,88 @@ public class LibraryApp {
             System.out.print("Enter your choice (1-3): ");
             String choice = scanner.nextLine();
 
-            if(choice.equals("1")){
-                //show available books(meaning the books that are not checked out)
-                for(int i =0; i< books.length; i++){
-                    if(!books[i].isCheckedOut()){
-                        System.out.println("ID: " + books[i].getId()+"ISBN: " + books[i].getIsbn() + ", Title: " + books[i].getTitle());
+            if (choice.equals("1")) {
+                System.out.println("\nAvailable Books:");
+                for (Book book : books) {
+                    if (!book.isCheckedOut()) {
+                        System.out.println("ID: " + book.getId() + ", ISBN: " + book.getIsbn() + ", Title: " + book.getTitle());
                     }
                 }
 
-                // Ask user if they want to check out a book
                 System.out.print("\nEnter the ID of the book you want to check out (0 to go back): ");
                 int bookId = Integer.parseInt(scanner.nextLine());
 
-                if(bookId !=0){
-                    for (int i = 0; i < books.length; i++) {
-                        if (books[i].getId() == bookId && !books[i].isCheckedOut()) {
+                if (bookId != 0) {
+                    boolean found = false;
+                    for (Book book : books) {
+                        if (book.getId() == bookId && !book.isCheckedOut()) {
                             System.out.print("Enter your name: ");
                             String name = scanner.nextLine();
-                            books[i].checkOut(name);
-                            System.out.printf("The Book %s with the ID %d is checked out successfully!",books[i].getTitle(), books[i].getId());
+                            book.checkOut(name);
+                            System.out.printf("The book \"%s\" (ID %d) is checked out successfully!\n", book.getTitle(), book.getId());
+                            found = true;
+                            break;
                         }
+                    }
+                    if (!found) {
+                        System.out.println("Invalid book ID or the book is already checked out.");
                     }
                 }
 
             } else if (choice.equals("2")) {
-                // Show books that are checked out
                 System.out.println("\nChecked Out Books:");
                 boolean anyCheckedOut = false;
-
-                for (int i = 0; i < books.length; i++) {
-                    if (books[i].isCheckedOut()) {
-                        System.out.println("ID: " + books[i].getId() + ", Title: " + books[i].getTitle() + ", Checked out to: " + books[i].getCheckedOutTo());
+                for (Book book : books) {
+                    if (book.isCheckedOut()) {
+                        System.out.println("ID: " + book.getId() + ", ISBN: " + book.getIsbn()
+                                + ", Title: " + book.getTitle()
+                                + ", Checked out to: " + book.getCheckedOutTo());
                         anyCheckedOut = true;
                     }
                 }
 
                 if (anyCheckedOut) {
-                    // Ask if user wants to check in a book
-                    System.out.print("\nEnter the ID of the book to check in (0 to go back): ");
-                    int checkInId = Integer.parseInt(scanner.nextLine());
+                    System.out.print("\nEnter:\nC - to Check In a book\nX - to go back to the home screen\nYour choice: ");
+                    String action = scanner.nextLine().toUpperCase();
 
-                    if (checkInId != 0) {
+                    if (action.equals("C")) {
+                        System.out.print("Enter the ID of the book to check in: ");
+                        int checkInId = Integer.parseInt(scanner.nextLine());
                         boolean found = false;
-                        for (int i = 0; i < books.length; i++) {
-                            if (books[i].getId() == checkInId && books[i].isCheckedOut()) {
-                                books[i].checkIn();
+
+                        for (Book book : books) {
+                            if (book.getId() == checkInId && book.isCheckedOut()) {
+                                book.checkIn();
                                 System.out.println("Book checked in successfully!");
                                 found = true;
                                 break;
                             }
                         }
+
                         if (!found) {
                             System.out.println("Invalid ID or that book is not checked out.");
                         }
+
+                    } else if (action.equals("X")) {
+                        // Go back to home screen
+                        continue;
+                    } else {
+                        System.out.println("Invalid option. Returning to main menu.");
                     }
+
                 } else {
                     System.out.println("No books are currently checked out.");
                 }
 
-            }
-            else if (choice.equals("3")) {
-                // Exit the program
+            } else if (choice.equals("3")) {
                 running = false;
-                System.out.println("Goodbye!");
-            }
-            else {
+                System.out.println("Goodbye! Thanks for visiting the library.");
+            } else {
                 System.out.println("Invalid option. Try again.");
             }
-
-
         }
 
-     scanner.close();
-
+        scanner.close();
     }
 }
+
